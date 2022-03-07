@@ -61,7 +61,13 @@ def createIndex(config, instance, **scope):
                         "created_at": {"type": "text"},
                         "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                         "timezone": {"type": "keyword"},
-                        "place": {"type": "keyword"},
+                        # "place": {"type": "keyword"},
+                        "place": {"type": "nested",
+                                  "properties": {
+                                      "type": {"type": "keyword"},
+                                      "coordinates": {"type": "Array"}
+                                  }
+                                  },
                         "location": {"type": "keyword"},
                         "tweet": {"type": "text"},
                         "lang": {"type": "keyword"},
@@ -88,7 +94,8 @@ def createIndex(config, instance, **scope):
                         "geo_tweet": {"type": "geo_point"},
                         "photos": {"type": "text"},
                         "user_rt_id": {"type": "keyword"},
-                        "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                        # "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                        "mentions": {"type": "text"},
                         "source": {"type": "keyword"},
                         "user_rt": {"type": "keyword"},
                         "retweet_id": {"type": "keyword"},
@@ -280,7 +287,7 @@ def Tweet(Tweet, config):
     if Tweet.source:
         j_data["_source"].update({"source": Tweet.Source})
     if config.Translate:
-        j_data["_source"].update({"translate": Tweet.translate})        
+        j_data["_source"].update({"translate": Tweet.translate})
         j_data["_source"].update({"trans_src": Tweet.trans_src})
         j_data["_source"].update({"trans_dest": Tweet.trans_dest})
 
