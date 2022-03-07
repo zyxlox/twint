@@ -5,7 +5,8 @@ from urllib.parse import urlencode
 from urllib.parse import quote
 
 mobile = "https://mobile.twitter.com"
-base = "https://api.twitter.com/2/search/adaptive.json"
+base = "https://twitter.com/i/api/2/search/adaptive.json"
+# base = "https://api.twitter.com/2/search/adaptive.json"
 
 
 def _sanitizeQuery(_url, params):
@@ -90,6 +91,7 @@ async def Search(config, init):
         ('simple_quoted_tweet', 'true'),
         ('count', tweet_count),
         # ('query_source', 'typed_query'),
+        ('query_source', 'recent_search_click'),
         # ('pc', '1'),
         ('cursor', str(init)),
         ('spelling_corrections', '1'),
@@ -163,6 +165,8 @@ async def Search(config, init):
     q = q.strip()
     params.append(("q", q))
     _serialQuery = _sanitizeQuery(url, params)
+
+    logme.error(f"============={url}=========={params}")
     return url, params, _serialQuery
 
 
@@ -196,9 +200,11 @@ def SearchProfile(config, init=None):
         ('include_tweet_replies', 'true'),
         ('count', tweet_count),
         ('ext', 'mediaStats%2ChighlightedLabel'),
+        ('query_source', 'recent_search_click'),
     ]
 
     if type(init) == str:
         params.append(('cursor', str(init)))
     _serialQuery = _sanitizeQuery(_url, params)
+    logme.error(f"============={_url}=========={params}")
     return _url, params, _serialQuery
