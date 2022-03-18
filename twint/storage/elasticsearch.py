@@ -61,15 +61,15 @@ def createIndex(config, instance, **scope):
                         "created_at": {"type": "text"},
                         "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                         "timezone": {"type": "keyword"},
-                        # "place": {"type": "keyword"},
-                        "place": {"type": "nested",
-                                  "properties": {
-                                      "type": {"type": "keyword"},
-                                      "coordinates": {"type": "Array"}
-                                  }
-                                  },
+                        "place": {"type": "keyword"},
+                        # "place": {"type": "nested",
+                        #           "properties": {
+                        #               "type": {"type": "keyword"},
+                        #               "coordinates": {"type": "Array"}
+                        #           }
+                        #           },
                         "location": {"type": "keyword"},
-                        "tweet": {"type": "text"},
+                        "tweet": {"type": "keyword"},
                         "lang": {"type": "keyword"},
                         "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                         "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
