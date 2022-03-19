@@ -75,7 +75,7 @@ def getText(tw):
 def _get_place(tw):
     try:
         place = {
-            'full_name':tw['place']['full_name'] if '' in '' else  tw['place']['full_name']
+            # 'full_name':tw['place']['full_name'] if '' in '' else  tw['place']['full_name']
         }
 
     except KeyError:
