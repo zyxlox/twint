@@ -230,6 +230,12 @@ def Tweet(Tweet, config):
                 "date": dt,
                 "timezone": Tweet.timezone,
                 # "place": Tweet.place, #修改了
+                "place": {"type": "nested",
+                          "properties": {
+                              "type": {"type": "keyword"},
+                              "coordinates": {"type": "Array"}
+                          }
+                          },
                 "tweet": Tweet.tweet,
                 "language": Tweet.lang,
                 "hashtags": Tweet.hashtags,

@@ -1,48 +1,188 @@
 PUT twinttweets
 {
   "mappings": {
-    "items": {
-      "properties": {
-          "id": {"type": "long"},
-          "conversation_id": {"type": "long"},
-          "created_at": {"type": "long"},
-          "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
-          "timezone": {"type": "keyword"},
-          "place": {"type": "keyword"},
-          "location": {"type": "keyword"},
-          "tweet": {"type": "text"},
-          "hashtags": {"type": "keyword"},
-          "cashtags": {"type": "keyword"},
-          "user_id": {"type": "long"},
-          "user_id_str": {"type": "keyword"},
-          "username": {"type": "keyword"},
-          "name": {"type": "text"},
-          "profile_image_url": {"type": "text"},
-          "day": {"type": "integer"},
-          "hour": {"type": "integer"},
-          "link": {"type": "text"},
-          "retweet": {"type": "text"},
-          "essid": {"type": "keyword"},
-          "nlikes": {"type": "integer"},
-          "nreplies": {"type": "integer"},
-          "nretweets": {"type": "integer"},
-          "quote_url": {"type": "text"},
-          "video": {"type": "integer"},
-          "thumbnail": {"type": "text"},
-          "search": {"type": "text"},
-          "near":  {"type": "text"},
-          "geo_near": {"type": "geo_point"},
-          "geo_tweet": {"type": "geo_point"},
-          "photos": {"type": "text"},
-          "mentions": {"type": "text"},
-          "translation": {"type": "text"},          
-          "trans_src": {"type": "keyword"},
-          "trans_dev": {"type": "keyword"},
+    "properties": {
+        "cashtags": {
+            "type": "keyword"
+        },
+        "conversation_id": {
+            "type": "long"
+        },
+        "created_at": {
+            "type": "text"
+        },
+        "date": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "day": {
+            "type": "integer"
+        },
+        "essid": {
+            "type": "keyword"
+        },
+        "geo_near": {
+            "type": "geo_point"
+        },
+        "geo_tweet": {
+            "type": "geo_point"
+        },
+        "hashtags": {
+            "type": "keyword"
+        },
+        "hour": {
+            "type": "integer"
+        },
+        "id": {
+            "type": "long"
+        },
+        "lang": {
+            "type": "keyword"
+        },
+        "language": {
+            "type": "text",
+            "fields": {
+                "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                }
+            }
+        },
+        "link": {
+            "type": "text"
+        },
+        "location": {
+            "type": "keyword"
+        },
+        "mentions": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                },
+                "screen_name": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "name": {
+            "type": "text"
+        },
+        "near": {
+            "type": "text"
+        },
+        "nlikes": {
+            "type": "integer"
+        },
+        "nreplies": {
+            "type": "integer"
+        },
+        "nretweets": {
+            "type": "integer"
+        },
+        "photos": {
+            "type": "text"
+        },
+        "profile_image_url": {
+            "type": "text"
+        },
+        "quote_url": {
+            "type": "text"
+        },
+        "reply_to": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "name": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "screen_name": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "user_id": {
+                    "type": "keyword"
+                },
+                "username": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "retweet": {
+            "type": "text"
+        },
+        "retweet_date": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss",
+            "ignore_malformed": true
+        },
+        "retweet_id": {
+            "type": "keyword"
+        },
+        "search": {
+            "type": "text"
+        },
+        "source": {
+            "type": "keyword"
+        },
+        "thumbnail": {
+            "type": "text"
+        },
+        "timezone": {
+            "type": "keyword"
+        },
+        "trans_dest": {
+            "type": "keyword"
+        },
+        "trans_src": {
+            "type": "keyword"
+        },
+        "translate": {
+            "type": "text"
+        },
+        "tweet": {
+            "type": "text"
+        },
+        "urls": {
+            "type": "keyword"
+        },
+        "user_id_str": {
+            "type": "keyword"
+        },
+        "user_rt": {
+            "type": "keyword"
+        },
+        "user_rt_id": {
+            "type": "keyword"
+        },
+        "username": {
+            "type": "keyword"
+        },
+        "video": {
+            "type": "integer"
+        }
       }
     }
   }
-  ,
-  "settings": {
-    "number_of_shards": 1
-  }
-}
