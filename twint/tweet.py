@@ -2,6 +2,7 @@ from time import strftime, localtime
 from datetime import datetime, timezone
 
 import logging as logme
+import json
 from googletransx import Translator
 # ref. 
 # - https://github.com/x0rzkov/py-googletrans#basic-usage
@@ -94,7 +95,7 @@ def Tweet(tw, config):
     t.user_id_str = tw["user_id_str"]
     t.username = tw["user_data"]['screen_name']
     t.name = tw["user_data"]['name']
-    t.place = tw['geo'] if 'geo' in tw and tw['geo'] else ""
+    t.place = json.dumps(tw["place"]) # tw['geo'] if 'geo' in tw and tw['geo'] else ""
     logme.error(f"====解析的时候位置========={str(t.place)}===========")
     t.timezone = strftime("%z", localtime())
     t.mentions = _get_mentions(tw)
