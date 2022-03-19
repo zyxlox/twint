@@ -2,6 +2,7 @@
 from elasticsearch import Elasticsearch, helpers
 from geopy.geocoders import Nominatim
 from datetime import datetime
+import logging as logme
 import contextlib
 import sys
 import json
@@ -205,6 +206,7 @@ def weekday(day):
 
 
 def Tweet(Tweet, config):
+    logme.error(f"============={json.dumps(Tweet)}==========")
     global _index_tweet_status
     global _is_near_def
     date_obj = datetime.strptime(Tweet.datetime, "%Y-%m-%d %H:%M:%S %Z")
@@ -221,7 +223,7 @@ def Tweet(Tweet, config):
     jsonPlace = Tweet.place
 
     if Tweet.place:
-        print(Tweet.place)
+        # print(Tweet.place)
         jsonPlace = json.dumps(Tweet.place)
 
     j_data = {
