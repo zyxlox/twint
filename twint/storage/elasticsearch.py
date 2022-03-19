@@ -64,7 +64,7 @@ def createIndex(config, instance, **scope):
                         "timezone": {"type": "keyword"},
                         "place": {"type": "keyword"},
                         "location": {"type": "keyword"},
-                        "tweet": {"type": "keyword"},
+                        "tweet": {"type": "keyword"},#修改了
                         "lang": {"type": "keyword"},
                         "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                         "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
@@ -89,7 +89,7 @@ def createIndex(config, instance, **scope):
                         "geo_tweet": {"type": "geo_point"},
                         "photos": {"type": "text"},
                         "user_rt_id": {"type": "keyword"},
-                        "mentions": {
+                        "mentions": {#修改了
                                 "type": "nested",
                                 "properties": {
                                     "id": {
@@ -229,7 +229,7 @@ def Tweet(Tweet, config):
                 "created_at": Tweet.datetime,
                 "date": dt,
                 "timezone": Tweet.timezone,
-                # "place": Tweet.place,
+                # "place": Tweet.place, #修改了
                 "tweet": Tweet.tweet,
                 "language": Tweet.lang,
                 "hashtags": Tweet.hashtags,
@@ -251,6 +251,7 @@ def Tweet(Tweet, config):
                 "near": config.Near
                 }
             }
+    logme.error(f"====es打印========={j_data}==========")
     if retweet is not None:
         j_data["_source"].update({"user_rt_id": Tweet.user_rt_id})
         j_data["_source"].update({"user_rt": Tweet.user_rt})
