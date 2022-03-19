@@ -72,7 +72,15 @@ def getText(tw):
     text = text.replace("\n", " ")
 
     return text
+def _get_place(tw):
+    try:
+        place = {
 
+        }
+
+    except KeyError:
+        place = []
+    return place
 
 def Tweet(tw, config):
     """Create Tweet object

@@ -70,12 +70,28 @@ def createIndex(config, instance, **scope):
                     "created_at": {"type": "text"},
                     "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                     "timezone": {"type": "keyword"},
-                    "place": {"type": "keyword"},
+                    # "place": {"type": "keyword"},
                     # "place": {"type": "geo_point"},
-                    # "place": {
-                    #     "dynamic": "true",
-                    #     "type": "nested"#内嵌对象
-                    # },
+                    "place": {
+                        "dynamic": "true",
+                        "type": "nested",#内嵌对象
+                        "properties": {
+                            "id": {"type": "keyword"},
+                            "url": {"type": "keyword"},
+                            "place_type": {"type": "keyword"},
+                            "name": {"type": "keyword"},
+                            "full_name": {"type": "keyword"},
+                            "country_code": {"type": "keyword"},
+                            "country": {"type": "keyword"},
+                            "bounding_box": {
+                                "type": "nested",
+                                "properties": {
+                                    "type": {"type": "keyword"},
+                                    "coordinates": {"type": "geo-shape"}
+                                }
+                            }
+                        }
+                    },
                     "location": {"type": "keyword"},
                     "tweet": {"type": "keyword"},
                     # "lang": {"type": "keyword"},
