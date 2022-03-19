@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, helpers
 from geopy.geocoders import Nominatim
 from datetime import datetime
 import contextlib
+import logging as logme
 import sys
 
 _index_tweet_status = False
@@ -52,6 +53,7 @@ def handleIndexResponse(response):
         return False
 
 def createIndex(config, instance, **scope):
+    logme.error(f"=============1=============")
     if scope.get("scope") == "tweet":
         tweets_body = {
                 "mappings": {
