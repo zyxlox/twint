@@ -65,7 +65,8 @@ def createIndex(config, instance, **scope):
                         "place": {"type": "keyword"},
                         "location": {"type": "keyword"},
                         "tweet": {"type": "keyword"},#修改了
-                        "lang": {"type": "keyword"},
+                        "lang": {"type": "keyword"},#language
+                        "language": {"type": "keyword"},#language
                         "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                         "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                         "user_id_str": {"type": "keyword"},
@@ -232,6 +233,7 @@ def Tweet(Tweet, config):
                 # "place": Tweet.place, #修改了
                 "tweet": Tweet.tweet,
                 "language": Tweet.lang,
+                "lang": Tweet.lang,
                 "hashtags": Tweet.hashtags,
                 "cashtags": Tweet.cashtags,
                 "user_id_str": Tweet.user_id_str,
