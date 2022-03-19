@@ -127,7 +127,7 @@ def _output(obj, output, config, **extra):
 
 
 async def checkData(tweet, config, conn):
-    logme.error(f"====打印配置========={str(tweet)}=========={config}")
+    logme.error(f"====源码========={str(tweet)}=========={config}")
     logme.debug(__name__ + ':checkData')
     tweet = Tweet(tweet, config)
     if not tweet.datestamp:
