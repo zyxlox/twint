@@ -75,7 +75,7 @@ def getText(tw):
 def _get_place(tw):
     try:
         place = {
-
+            'full_name':tw['place']['full_name'] if '' in '' else  tw['place']['full_name']
         }
 
     except KeyError:
@@ -104,6 +104,7 @@ def Tweet(tw, config):
     t.username = tw["user_data"]['screen_name']
     t.name = tw["user_data"]['name']
     t.place = _get_place(tw)
+    # t.place = tw['geo'] if 'geo' in tw and tw['geo'] else ""
     logme.error(f"====解析的时候位置========={str(t.place)}===========")
     t.timezone = strftime("%z", localtime())
     t.mentions = _get_mentions(tw)
