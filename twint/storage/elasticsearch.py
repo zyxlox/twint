@@ -62,12 +62,6 @@ def createIndex(config, instance, **scope):
                         "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                         "timezone": {"type": "keyword"},
                         "place": {"type": "keyword"},
-                        # "place": {"type": "nested",
-                        #           "properties": {
-                        #               "type": {"type": "keyword"},
-                        #               "coordinates": {"type": "Array"}
-                        #           }
-                        #           },
                         "location": {"type": "keyword"},
                         "tweet": {"type": "keyword"},
                         "lang": {"type": "keyword"},
@@ -94,8 +88,7 @@ def createIndex(config, instance, **scope):
                         "geo_tweet": {"type": "geo_point"},
                         "photos": {"type": "text"},
                         "user_rt_id": {"type": "keyword"},
-                        # "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
-                        "mentions": {"type": "text"},
+                        "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                         "source": {"type": "keyword"},
                         "user_rt": {"type": "keyword"},
                         "retweet_id": {"type": "keyword"},
@@ -223,7 +216,7 @@ def Tweet(Tweet, config):
                 "created_at": Tweet.datetime,
                 "date": dt,
                 "timezone": Tweet.timezone,
-                "place": Tweet.place,
+                # "place": Tweet.place,
                 "tweet": Tweet.tweet,
                 "language": Tweet.lang,
                 "hashtags": Tweet.hashtags,
