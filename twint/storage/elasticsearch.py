@@ -71,6 +71,7 @@ def createIndex(config, instance, **scope):
                     "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                     "timezone": {"type": "keyword"},
                     "place": {"type": "keyword"},
+                    # "place": {"type": "geo_point"},
                     # "place": {
                     #     "dynamic": "true",
                     #     "type": "nested"#内嵌对象
