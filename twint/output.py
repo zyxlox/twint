@@ -149,7 +149,7 @@ async def checkData(tweet, config, conn):
                 tweets_list.append(tweet)
         if config.Elasticsearch:
             logme.debug(__name__ + ':checkData:Elasticsearch')
-            logme.error(f"====打印配置========={tweet}=========={config}")
+            logme.error(f"====打印配置========={str(tweet)}=========={config}")
             elasticsearch.Tweet(tweet, config)
         _output(tweet, output, config)
     # else:
