@@ -251,7 +251,6 @@ def Tweet(Tweet, config):
                 "near": config.Near
                 }
             }
-    logme.error(f"====es打印========={j_data}==========")
     if retweet is not None:
         j_data["_source"].update({"user_rt_id": Tweet.user_rt_id})
         j_data["_source"].update({"user_rt": Tweet.user_rt})
@@ -301,6 +300,7 @@ def Tweet(Tweet, config):
     actions.append(j_data)
 
     es = Elasticsearch(config.Elasticsearch, verify_certs=config.Skip_certs)
+    logme.error(f"====es打印========={j_data}==========")
     if not _index_tweet_status:
         _index_tweet_status = createIndex(config, es, scope="tweet")
     with nostdout():
