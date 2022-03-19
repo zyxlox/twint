@@ -108,8 +108,39 @@ def createIndex(config, instance, **scope):
                         "reply_to": {
                             "type": "nested",
                             "properties": {
-                                "user_id": {"type": "keyword"},
-                                "username": {"type": "keyword"}
+                                "id": {
+                                    "type": "text",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword",
+                                            "ignore_above": 256
+                                        }
+                                    }
+                                },
+                                "name": {
+                                    "type": "text",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword",
+                                            "ignore_above": 256
+                                        }
+                                    }
+                                },
+                                "screen_name": {
+                                    "type": "text",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword",
+                                            "ignore_above": 256
+                                        }
+                                    }
+                                },
+                                "user_id": {
+                                    "type": "keyword"
+                                },
+                                "username": {
+                                    "type": "keyword"
+                                }
                             }
                         },
                         "retweet_date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss", "ignore_malformed": True},
