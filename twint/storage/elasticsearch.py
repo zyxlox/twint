@@ -70,7 +70,11 @@ def createIndex(config, instance, **scope):
                     "created_at": {"type": "text"},
                     "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                     "timezone": {"type": "keyword"},
-                    "place": {"type": "keyword"},
+                    # "place": {"type": "keyword"},
+                    "place": {
+                        "dynamic": "true",
+                        "type": "nested"#内嵌对象
+                    },
                     "location": {"type": "keyword"},
                     "tweet": {"type": "keyword"},
                     # "lang": {"type": "keyword"},
@@ -221,12 +225,12 @@ def Tweet(Tweet, config):
 
     dt = f"{Tweet.datestamp} {Tweet.timestamp}"
 
-    jsonPlace = Tweet.place
-
-    if Tweet.place:
-        # print(Tweet.place)
-        jsonPlace = json.dumps(Tweet.place)
-    logme.error(f"====位置========={jsonPlace}==========={Tweet.place}")
+    # jsonPlace = Tweet.place
+    #
+    # if Tweet.place:
+    #     # print(Tweet.place)
+    #     jsonPlace = json.dumps(Tweet.place)
+    # logme.error(f"====位置========={jsonPlace}==========={Tweet.place}")
     j_data = {
         "_index": config.Index_tweets,
         "_id": str(Tweet.id) + "_raw_" + config.Essid,
@@ -236,7 +240,7 @@ def Tweet(Tweet, config):
             "created_at": Tweet.datetime,
             "date": dt,
             "timezone": Tweet.timezone,
-            "place": jsonPlace,
+            "place": Tweet.place,
             "tweet": Tweet.tweet,
             "language": Tweet.lang,
             "hashtags": Tweet.hashtags,
