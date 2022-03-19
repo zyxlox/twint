@@ -53,7 +53,6 @@ def handleIndexResponse(response):
         return False
 
 def createIndex(config, instance, **scope):
-    logme.error(f"=============1=============")
     if scope.get("scope") == "tweet":
         tweets_body = {
                 "mappings": {
@@ -63,7 +62,7 @@ def createIndex(config, instance, **scope):
                         "created_at": {"type": "text"},
                         "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                         "timezone": {"type": "keyword"},
-                        # "place": {"type": "keyword"},
+                        "place": {"type": "keyword"},
                         "location": {"type": "keyword"},
                         "tweet": {"type": "keyword"},
                         "lang": {"type": "keyword"},
@@ -110,39 +109,8 @@ def createIndex(config, instance, **scope):
                         "reply_to": {
                             "type": "nested",
                             "properties": {
-                                "id": {
-                                    "type": "text",
-                                    "fields": {
-                                        "keyword": {
-                                            "type": "keyword",
-                                            "ignore_above": 256
-                                        }
-                                    }
-                                },
-                                "name": {
-                                    "type": "text",
-                                    "fields": {
-                                        "keyword": {
-                                            "type": "keyword",
-                                            "ignore_above": 256
-                                        }
-                                    }
-                                },
-                                "screen_name": {
-                                    "type": "text",
-                                    "fields": {
-                                        "keyword": {
-                                            "type": "keyword",
-                                            "ignore_above": 256
-                                        }
-                                    }
-                                },
-                                "user_id": {
-                                    "type": "keyword"
-                                },
-                                "username": {
-                                    "type": "keyword"
-                                }
+                                "user_id": {"type": "keyword"},
+                                "username": {"type": "keyword"}
                             }
                         },
                         "retweet_date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss", "ignore_malformed": True},
@@ -243,8 +211,6 @@ def Tweet(Tweet, config):
     global _index_tweet_status
     global _is_near_def
     date_obj = datetime.strptime(Tweet.datetime, "%Y-%m-%d %H:%M:%S %Z")
-    logme.error(f"=====时间========{date_obj}=============")
-
     actions = []
 
     try:
