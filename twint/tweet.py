@@ -79,7 +79,7 @@ def _get_place(tw):
         }
 
     except KeyError:
-        place = []
+        place = {}
     return place
 
 def Tweet(tw, config):
