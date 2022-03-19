@@ -88,7 +88,20 @@ def createIndex(config, instance, **scope):
                         "geo_tweet": {"type": "geo_point"},
                         "photos": {"type": "text"},
                         "user_rt_id": {"type": "keyword"},
-                        "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                        "mentions": {
+                                "type": "nested",
+                                "properties": {
+                                    "id": {
+                                        "type": "long"
+                                    },
+                                    "name": {
+                                        "type": "text"
+                                    },
+                                    "screen_name": {
+                                        "type": "text"
+                                    }
+                                }
+                        },
                         "source": {"type": "keyword"},
                         "user_rt": {"type": "keyword"},
                         "retweet_id": {"type": "keyword"},
