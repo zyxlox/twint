@@ -206,7 +206,7 @@ def weekday(day):
 
 
 def Tweet(Tweet, config):
-    logme.error(f"============={json.dumps(Tweet)}==========")
+    logme.error(f"============={str(Tweet)}==========")
     global _index_tweet_status
     global _is_near_def
     date_obj = datetime.strptime(Tweet.datetime, "%Y-%m-%d %H:%M:%S %Z")
