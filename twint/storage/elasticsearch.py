@@ -134,6 +134,7 @@ def createIndex(config, instance, **scope):
                     }
                 }
         with nostdout():
+            logme.error(f"=======es打印========={config.Index_tweets}================={tweets_body}==========")
             resp = instance.indices.create(index=config.Index_tweets, body=tweets_body, ignore=400)
         return handleIndexResponse(resp)
     elif scope.get("scope") == "follow":
@@ -298,9 +299,7 @@ def Tweet(Tweet, config):
         j_data["_source"].update({"trans_dest": Tweet.trans_dest})
 
     actions.append(j_data)
-
     es = Elasticsearch(config.Elasticsearch, verify_certs=config.Skip_certs)
-    logme.error(f"====es打印========={j_data}==========")
     if not _index_tweet_status:
         _index_tweet_status = createIndex(config, es, scope="tweet")
     with nostdout():
