@@ -95,7 +95,7 @@ def Tweet(tw, config):
     t.user_id_str = tw["user_id_str"]
     t.username = tw["user_data"]['screen_name']
     t.name = tw["user_data"]['name']
-    t.place = tw['place']['full_name'] if tw['place']['full_name'] in tw and tw['place']['full_name'] else ""
+    t.place = tw['place'] if 'place' in tw and tw['place'] else ""
     logme.error(f"====解析的时候位置========={str(t.place)}===========")
     t.timezone = strftime("%z", localtime())
     t.mentions = _get_mentions(tw)
