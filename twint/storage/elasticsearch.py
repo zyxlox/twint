@@ -61,7 +61,7 @@ def createIndex(config, instance, **scope):
                         "created_at": {"type": "text"},
                         "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
                         "timezone": {"type": "keyword"},
-                        "place": {"type": "keyword"},
+                        # "place": {"type": "keyword"},
                         "location": {"type": "keyword"},
                         "tweet": {"type": "keyword"},
                         "lang": {"type": "keyword"},
