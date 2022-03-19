@@ -229,7 +229,7 @@ def Tweet(Tweet, config):
                 "created_at": Tweet.datetime,
                 "date": dt,
                 "timezone": Tweet.timezone,
-                # "place": Tweet.place, #修改了
+                "place": Tweet.place, #修改了
                 "tweet": Tweet.tweet,
                 "language": Tweet.lang,
                 "hashtags": Tweet.hashtags,
