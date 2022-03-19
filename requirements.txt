@@ -1,7 +1,7 @@
 aiohttp==3.7.0
-aiodns==2.0.0
-beautifulsoup4==4.7.1
-cchardet==2.1.4
+aiodns
+beautifulsoup4
+cchardet
 dataclasses
 elasticsearch
 pysocks
