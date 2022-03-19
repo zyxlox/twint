@@ -73,7 +73,8 @@ def createIndex(config, instance, **scope):
                     "place": {"type": "keyword"},
                     "location": {"type": "keyword"},
                     "tweet": {"type": "keyword"},
-                    "lang": {"type": "keyword"},
+                    # "lang": {"type": "keyword"},
+                    "language": {"type": "text","fields": {"keyword": {"type": "keyword","ignore_above": 256}}},
                     "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                     "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
                     "user_id_str": {"type": "keyword"},
@@ -225,7 +226,7 @@ def Tweet(Tweet, config):
     if Tweet.place:
         # print(Tweet.place)
         jsonPlace = json.dumps(Tweet.place)
-
+    logme.error(f"====位置========={jsonPlace}==========={Tweet.place}")
     j_data = {
         "_index": config.Index_tweets,
         "_id": str(Tweet.id) + "_raw_" + config.Essid,
@@ -299,7 +300,7 @@ def Tweet(Tweet, config):
         if _near:
             j_data["_source"].update({"geo_near": _near})
     if Tweet.place:
-        print("------------------0000")
+        # print("------------------0000")
         _t_place = getLocation(Tweet.place)
         print(_t_place)
         if _t_place:
