@@ -72,12 +72,20 @@ def getText(tw):
     text = text.replace("\n", " ")
 
     return text
-def _get_place(tw):
-    try:
-        place = {
-            # 'full_name':tw['place']['full_name'] if '' in '' else  tw['place']['full_name']
-        }
-
+def _get_place(twPlace):
+    try: #是否有 否{} 是解析
+        if twPlace:
+            # 解析
+            place = {
+                'id':twPlace['id'],
+                'url':twPlace['url'],
+                'place_type':twPlace['place_type'],
+                'name':twPlace['name'],
+                'full_name':twPlace['full_name'],
+                'country_code':twPlace['country_code'],
+                'country':twPlace['country'],
+                'bounding_box':twPlace['bounding_box']
+            }
     except KeyError:
         place = {}
     return place
@@ -103,7 +111,7 @@ def Tweet(tw, config):
     t.user_id_str = tw["user_id_str"]
     t.username = tw["user_data"]['screen_name']
     t.name = tw["user_data"]['name']
-    t.place = _get_place(tw)
+    t.place = _get_place(tw['place'])
     # t.place = tw['geo'] if 'geo' in tw and tw['geo'] else ""
     logme.error(f"====解析的时候位置========={str(t.place)}===========")
     t.timezone = strftime("%z", localtime())
