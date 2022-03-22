@@ -72,23 +72,28 @@ def getText(tw):
     text = text.replace("\n", " ")
 
     return text
+
+
 def _get_place(twPlace):
     logme.error(f"============={str(twPlace)}==========")
-    try: #是否有 否{} 是解析
-        if twPlace:
-            # 解析
-            place = {
-                'id':twPlace['id'],
-                'url':twPlace['url'],
-                'place_type':twPlace['place_type'],
-                'name':twPlace['name'],
-                'full_name':twPlace['full_name'],
-                'country_code':twPlace['country_code'],
-                'country':twPlace['country'],
-                'bounding_box':twPlace['bounding_box']
-            }
-    except KeyError:
+    if twPlace is None:
         place = {}
+    else :
+        try:  # 是否有 否{} 是解析
+            if twPlace:
+                # 解析
+                place = {
+                    'id': twPlace['id'],
+                    'url': twPlace['url'],
+                    'place_type': twPlace['place_type'],
+                    'name': twPlace['name'],
+                    'full_name': twPlace['full_name'],
+                    'country_code': twPlace['country_code'],
+                    'country': twPlace['country'],
+                    'bounding_box': twPlace['bounding_box']
+                }
+        except KeyError:
+            place = {}
     return place
 
 def Tweet(tw, config):
