@@ -127,6 +127,7 @@ def _output(obj, output, config, **extra):
 
 
 async def checkData(tweet, config, conn):
+    # logme.error(f"====源码========={str(tweet)}=========={config}")
     logme.debug(__name__ + ':checkData')
     tweet = Tweet(tweet, config)
     if not tweet.datestamp:
@@ -149,6 +150,7 @@ async def checkData(tweet, config, conn):
                 tweets_list.append(tweet)
         if config.Elasticsearch:
             logme.debug(__name__ + ':checkData:Elasticsearch')
+
             elasticsearch.Tweet(tweet, config)
         _output(tweet, output, config)
     # else:

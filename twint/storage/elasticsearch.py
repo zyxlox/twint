@@ -2,8 +2,10 @@
 from elasticsearch import Elasticsearch, helpers
 from geopy.geocoders import Nominatim
 from datetime import datetime
+import logging as logme
 import contextlib
 import sys
+import json
 
 _index_tweet_status = False
 _index_follow_status = False
@@ -15,12 +17,17 @@ _location = {}
 
 geolocator = Nominatim(user_agent="twint-1.2")
 
+
 class RecycleObject(object):
     def write(self, junk): pass
+
     def flush(self): pass
 
+
 def getLocation(place, **options):
-    location = geolocator.geocode(place,timeout=1000)
+    print(place)
+    location = geolocator.geocode(place, timeout=1000)
+    print(location)
     if location:
         if options.get("near"):
             global _near
@@ -33,6 +40,7 @@ def getLocation(place, **options):
         return {"lat": location.latitude, "lon": location.longitude}
     else:
         return {}
+
 
 def handleIndexResponse(response):
     try:
@@ -51,134 +59,151 @@ def handleIndexResponse(response):
         print("[x] error with shards :: storage.elasticsearch.HandleIndexCreation")
         return False
 
+
 def createIndex(config, instance, **scope):
     if scope.get("scope") == "tweet":
         tweets_body = {
-                "mappings": {
-                    "properties": {
-                        "id": {"type": "long"},
-                        "conversation_id": {"type": "long"},
-                        "created_at": {"type": "text"},
-                        "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
-                        "timezone": {"type": "keyword"},
-                        # "place": {"type": "keyword"},
-                        "place": {"type": "nested",
-                                  "properties": {
-                                      "type": {"type": "keyword"},
-                                      "coordinates": {"type": "Array"}
-                                  }
-                                  },
-                        "location": {"type": "keyword"},
-                        "tweet": {"type": "text"},
-                        "lang": {"type": "keyword"},
-                        "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
-                        "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
-                        "user_id_str": {"type": "keyword"},
-                        "username": {"type": "keyword", "normalizer": "hashtag_normalizer"},
-                        "name": {"type": "text"},
-                        "profile_image_url": {"type": "text"},
-                        "day": {"type": "integer"},
-                        "hour": {"type": "integer"},
-                        "link": {"type": "text"},
-                        "retweet": {"type": "text"},
-                        "essid": {"type": "keyword"},
-                        "nlikes": {"type": "integer"},
-                        "nreplies": {"type": "integer"},
-                        "nretweets": {"type": "integer"},
-                        "quote_url": {"type": "text"},
-                        "video": {"type":"integer"},
-                        "thumbnail": {"type":"text"},
-                        "search": {"type": "text"},
-                        "near": {"type": "text"},
-                        "geo_near": {"type": "geo_point"},
-                        "geo_tweet": {"type": "geo_point"},
-                        "photos": {"type": "text"},
-                        "user_rt_id": {"type": "keyword"},
-                        # "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
-                        "mentions": {"type": "text"},
-                        "source": {"type": "keyword"},
-                        "user_rt": {"type": "keyword"},
-                        "retweet_id": {"type": "keyword"},
-                        "reply_to": {
-                            "type": "nested",
-                            "properties": {
-                                "user_id": {"type": "keyword"},
-                                "username": {"type": "keyword"}
-                            }
-                        },
-                        "retweet_date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss", "ignore_malformed": True},
-                        "urls": {"type": "keyword"},
-                        "translate": {"type": "text"},
-                        "trans_src": {"type": "keyword"},
-                        "trans_dest": {"type": "keyword"},
-                        }
-                    },
-                    "settings": {
-                        "number_of_shards": 1,
-                        "analysis": {
-                            "normalizer": {
-                                "hashtag_normalizer": {
-                                    "type": "custom",
-                                    "char_filter": [],
-                                    "filter": ["lowercase", "asciifolding"]
+            "mappings": {
+                "properties": {
+                    "id": {"type": "long"},
+                    "conversation_id": {"type": "long"},
+                    "created_at": {"type": "text"},
+                    "date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
+                    "timezone": {"type": "keyword"},
+                    # "place": {"type": "keyword"},
+                    # "place": {"type": "geo_point"},
+                    "place": {
+                        "dynamic": "true",
+                        "type": "nested",#内嵌对象
+                        "properties": {
+                            "id": {"type": "keyword"},
+                            "url": {"type": "keyword"},
+                            "place_type": {"type": "keyword"},
+                            "name": {"type": "keyword"},
+                            "full_name": {"type": "keyword"},
+                            "country_code": {"type": "keyword"},
+                            "country": {"type": "keyword"},
+                            "bounding_box": {
+                                "type": "nested",
+                                "properties": {
+                                    "type": {"type": "keyword"},
+                                    "coordinates": {"type": "geo-shape"}
                                 }
                             }
                         }
+                    },
+                    "location": {"type": "keyword"},
+                    "tweet": {"type": "keyword"},
+                    # "lang": {"type": "keyword"},
+                    "language": {"type": "text","fields": {"keyword": {"type": "keyword","ignore_above": 256}}},
+                    "hashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                    "cashtags": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                    "user_id_str": {"type": "keyword"},
+                    "username": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                    "name": {"type": "text"},
+                    "profile_image_url": {"type": "text"},
+                    "day": {"type": "integer"},
+                    "hour": {"type": "integer"},
+                    "link": {"type": "text"},
+                    "retweet": {"type": "text"},
+                    "essid": {"type": "keyword"},
+                    "nlikes": {"type": "integer"},
+                    "nreplies": {"type": "integer"},
+                    "nretweets": {"type": "integer"},
+                    "quote_url": {"type": "text"},
+                    "video": {"type": "integer"},
+                    "thumbnail": {"type": "text"},
+                    "search": {"type": "text"},
+                    "near": {"type": "text"},
+                    "geo_near": {"type": "geo_point"},
+                    "geo_tweet": {"type": "geo_point"},
+                    "photos": {"type": "text"},
+                    "user_rt_id": {"type": "keyword"},
+                    "mentions": {"type": "keyword", "normalizer": "hashtag_normalizer"},
+                    "source": {"type": "keyword"},
+                    "user_rt": {"type": "keyword"},
+                    "retweet_id": {"type": "keyword"},
+                    "reply_to": {
+                        "type": "nested",
+                        "properties": {
+                            "user_id": {"type": "keyword"},
+                            "username": {"type": "keyword"}
+                        }
+                    },
+                    "retweet_date": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss", "ignore_malformed": True},
+                    "urls": {"type": "keyword"},
+                    "translate": {"type": "text"},
+                    "trans_src": {"type": "keyword"},
+                    "trans_dest": {"type": "keyword"},
+                }
+            },
+            "settings": {
+                "number_of_shards": 1,
+                "analysis": {
+                    "normalizer": {
+                        "hashtag_normalizer": {
+                            "type": "custom",
+                            "char_filter": [],
+                            "filter": ["lowercase", "asciifolding"]
+                        }
                     }
                 }
+            }
+        }
         with nostdout():
             resp = instance.indices.create(index=config.Index_tweets, body=tweets_body, ignore=400)
         return handleIndexResponse(resp)
     elif scope.get("scope") == "follow":
         follow_body = {
-                "mappings": {
-                    "properties": {
-                        "user": {"type": "keyword"},
-                        "follow": {"type": "keyword"},
-                        "essid": {"type": "keyword"}
-                        }
-                    },
-                    "settings": {
-                        "number_of_shards": 1
-                    }
+            "mappings": {
+                "properties": {
+                    "user": {"type": "keyword"},
+                    "follow": {"type": "keyword"},
+                    "essid": {"type": "keyword"}
                 }
+            },
+            "settings": {
+                "number_of_shards": 1
+            }
+        }
         with nostdout():
             resp = instance.indices.create(index=config.Index_follow, body=follow_body, ignore=400)
         return handleIndexResponse(resp)
     elif scope.get("scope") == "user":
         user_body = {
-                "mappings": {
-                    "properties": {
-                        "id": {"type": "keyword"},
-                        "name": {"type": "keyword"},
-                        "username": {"type": "keyword"},
-                        "bio": {"type": "text"},
-                        "location": {"type": "keyword"},
-                        "url": {"type": "text"},
-                        "join_datetime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
-                        "tweets": {"type": "integer"},
-                        "following": {"type": "integer"},
-                        "followers": {"type": "integer"},
-                        "likes": {"type": "integer"},
-                        "media": {"type": "integer"},
-                        "private": {"type": "integer"},
-                        "verified": {"type": "integer"},
-                        "avatar": {"type": "text"},
-                        "background_image": {"type": "text"},
-                        "session": {"type": "keyword"},
-                        "geo_user": {"type": "geo_point"}
-                        }
-                    },
-                    "settings": {
-                        "number_of_shards": 1
-                    }
+            "mappings": {
+                "properties": {
+                    "id": {"type": "keyword"},
+                    "name": {"type": "keyword"},
+                    "username": {"type": "keyword"},
+                    "bio": {"type": "text"},
+                    "location": {"type": "keyword"},
+                    "url": {"type": "text"},
+                    "join_datetime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"},
+                    "tweets": {"type": "integer"},
+                    "following": {"type": "integer"},
+                    "followers": {"type": "integer"},
+                    "likes": {"type": "integer"},
+                    "media": {"type": "integer"},
+                    "private": {"type": "integer"},
+                    "verified": {"type": "integer"},
+                    "avatar": {"type": "text"},
+                    "background_image": {"type": "text"},
+                    "session": {"type": "keyword"},
+                    "geo_user": {"type": "geo_point"}
                 }
+            },
+            "settings": {
+                "number_of_shards": 1
+            }
+        }
         with nostdout():
             resp = instance.indices.create(index=config.Index_users, body=user_body, ignore=400)
         return handleIndexResponse(resp)
     else:
         print("[x] error index pre-creation :: storage.elasticsearch.createIndex")
         return False
+
 
 @contextlib.contextmanager
 def nostdout():
@@ -187,20 +212,23 @@ def nostdout():
     yield
     sys.stdout = savestdout
 
+
 def weekday(day):
     weekdays = {
-            "Monday": 1,
-            "Tuesday": 2,
-            "Wednesday": 3,
-            "Thursday": 4,
-            "Friday": 5,
-            "Saturday": 6,
-            "Sunday": 7,
-            }
+        "Monday": 1,
+        "Tuesday": 2,
+        "Wednesday": 3,
+        "Thursday": 4,
+        "Friday": 5,
+        "Saturday": 6,
+        "Sunday": 7,
+    }
 
     return weekdays[day]
 
+
 def Tweet(Tweet, config):
+    logme.error(f"============={str(Tweet)}==========")
     global _index_tweet_status
     global _is_near_def
     date_obj = datetime.strptime(Tweet.datetime, "%Y-%m-%d %H:%M:%S %Z")
@@ -214,37 +242,43 @@ def Tweet(Tweet, config):
 
     dt = f"{Tweet.datestamp} {Tweet.timestamp}"
 
+    # jsonPlace = Tweet.place
+    #
+    # if Tweet.place:
+    #     # print(Tweet.place)
+    #     jsonPlace = json.dumps(Tweet.place)
+    # logme.error(f"====位置========={jsonPlace}==========={Tweet.place}")
     j_data = {
-            "_index": config.Index_tweets,
-            "_id": str(Tweet.id) + "_raw_" + config.Essid,
-            "_source": {
-                "id": str(Tweet.id),
-                "conversation_id": Tweet.conversation_id,
-                "created_at": Tweet.datetime,
-                "date": dt,
-                "timezone": Tweet.timezone,
-                "place": Tweet.place,
-                "tweet": Tweet.tweet,
-                "language": Tweet.lang,
-                "hashtags": Tweet.hashtags,
-                "cashtags": Tweet.cashtags,
-                "user_id_str": Tweet.user_id_str,
-                "username": Tweet.username,
-                "name": Tweet.name,
-                "day": date_obj.weekday(),
-                "hour": date_obj.hour,
-                "link": Tweet.link,
-                "retweet": retweet,
-                "essid": config.Essid,
-                "nlikes": int(Tweet.likes_count),
-                "nreplies": int(Tweet.replies_count),
-                "nretweets": int(Tweet.retweets_count),
-                "quote_url": Tweet.quote_url,
-                "video": Tweet.video,
-                "search": str(config.Search),
-                "near": config.Near
-                }
-            }
+        "_index": config.Index_tweets,
+        "_id": str(Tweet.id) + "_raw_" + config.Essid,
+        "_source": {
+            "id": str(Tweet.id),
+            "conversation_id": Tweet.conversation_id,
+            "created_at": Tweet.datetime,
+            "date": dt,
+            "timezone": Tweet.timezone,
+            "place": Tweet.place,
+            "tweet": Tweet.tweet,
+            "language": Tweet.lang,
+            "hashtags": Tweet.hashtags,
+            "cashtags": Tweet.cashtags,
+            "user_id_str": Tweet.user_id_str,
+            "username": Tweet.username,
+            "name": Tweet.name,
+            "day": date_obj.weekday(),
+            "hour": date_obj.hour,
+            "link": Tweet.link,
+            "retweet": retweet,
+            "essid": config.Essid,
+            "nlikes": int(Tweet.likes_count),
+            "nreplies": int(Tweet.replies_count),
+            "nretweets": int(Tweet.retweets_count),
+            "quote_url": Tweet.quote_url,
+            "video": Tweet.video,
+            "search": str(config.Search),
+            "near": config.Near
+        }
+    }
     if retweet is not None:
         j_data["_source"].update({"user_rt_id": Tweet.user_rt_id})
         j_data["_source"].update({"user_rt": Tweet.user_rt})
@@ -256,19 +290,25 @@ def Tweet(Tweet, config):
         _photos = []
         for photo in Tweet.photos:
             _photos.append(photo)
-        j_data["_source"].update({"photos": _photos})
+
+        jsonStr = json.dumps(_photos)
+        j_data["_source"].update({"photos": jsonStr})
     if Tweet.thumbnail:
         j_data["_source"].update({"thumbnail": Tweet.thumbnail})
     if Tweet.mentions:
         _mentions = []
         for mention in Tweet.mentions:
             _mentions.append(mention)
-        j_data["_source"].update({"mentions": _mentions})
+
+        jsonStr = json.dumps(_mentions)
+        j_data["_source"].update({"mentions": jsonStr})
     if Tweet.urls:
         _urls = []
         for url in Tweet.urls:
             _urls.append(url)
-        j_data["_source"].update({"urls": _urls})
+
+        jsonStr = json.dumps(_urls)
+        j_data["_source"].update({"urls": jsonStr})
     if config.Near or config.Geo:
         if not _is_near_def:
             __geo = ""
@@ -281,7 +321,9 @@ def Tweet(Tweet, config):
         if _near:
             j_data["_source"].update({"geo_near": _near})
     if Tweet.place:
+        # print("------------------0000")
         _t_place = getLocation(Tweet.place)
+        print(_t_place)
         if _t_place:
             j_data["_source"].update({"geo_tweet": getLocation(Tweet.place)})
     if Tweet.source:
@@ -300,6 +342,7 @@ def Tweet(Tweet, config):
         helpers.bulk(es, actions, chunk_size=2000, request_timeout=200)
     actions = []
 
+
 def Follow(user, config):
     global _index_follow_status
     actions = []
@@ -311,14 +354,14 @@ def Follow(user, config):
         _user = user
         _follow = config.Username
     j_data = {
-            "_index": config.Index_follow,
-            "_id": _user + "_" + _follow + "_" + config.Essid,
-            "_source": {
-                "user": _user,
-                "follow": _follow,
-                "essid": config.Essid
-                }
-            }
+        "_index": config.Index_follow,
+        "_id": _user + "_" + _follow + "_" + config.Essid,
+        "_source": {
+            "user": _user,
+            "follow": _follow,
+            "essid": config.Essid
+        }
+    }
     actions.append(j_data)
 
     es = Elasticsearch(config.Elasticsearch, verify_certs=config.Skip_certs)
@@ -328,34 +371,35 @@ def Follow(user, config):
         helpers.bulk(es, actions, chunk_size=2000, request_timeout=200)
     actions = []
 
+
 def UserProfile(user, config):
     global _index_user_status
     global _is_location_def
     actions = []
 
     j_data = {
-            "_index": config.Index_users,
-            "_id": user.id + "_" + user.join_date + "_" + user.join_time + "_" + config.Essid,
-            "_source": {
-                "id": user.id,
-                "name": user.name,
-                "username": user.username,
-                "bio": user.bio,
-                "location": user.location,
-                "url": user.url,
-                "join_datetime": user.join_date + " " + user.join_time,
-                "tweets": user.tweets,
-                "following": user.following,
-                "followers": user.followers,
-                "likes": user.likes,
-                "media": user.media_count,
-                "private": user.is_private,
-                "verified": user.is_verified,
-                "avatar": user.avatar,
-                "background_image": user.background_image,
-                "session": config.Essid
-                }
-            }
+        "_index": config.Index_users,
+        "_id": user.id + "_" + user.join_date + "_" + user.join_time + "_" + config.Essid,
+        "_source": {
+            "id": user.id,
+            "name": user.name,
+            "username": user.username,
+            "bio": user.bio,
+            "location": user.location,
+            "url": user.url,
+            "join_datetime": user.join_date + " " + user.join_time,
+            "tweets": user.tweets,
+            "following": user.following,
+            "followers": user.followers,
+            "likes": user.likes,
+            "media": user.media_count,
+            "private": user.is_private,
+            "verified": user.is_verified,
+            "avatar": user.avatar,
+            "background_image": user.background_image,
+            "session": config.Essid
+        }
+    }
     if config.Location:
         if not _is_location_def:
             _is_location_def = getLocation(user.location, location=True)

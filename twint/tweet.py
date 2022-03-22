@@ -2,6 +2,7 @@ from time import strftime, localtime
 from datetime import datetime, timezone
 
 import logging as logme
+import json
 from googletransx import Translator
 # ref. 
 # - https://github.com/x0rzkov/py-googletrans#basic-usage
@@ -73,6 +74,28 @@ def getText(tw):
     return text
 
 
+def _get_place(twPlace):
+    # logme.error(f"============={str(twPlace)}==========")
+    if twPlace is None:
+        place = {}
+    else :
+        try:  # 是否有 否{} 是解析
+            if twPlace:
+                # 解析
+                place = {
+                    'id': twPlace['id'],
+                    'url': twPlace['url'],
+                    'place_type': twPlace['place_type'],
+                    'name': twPlace['name'],
+                    'full_name': twPlace['full_name'],
+                    'country_code': twPlace['country_code'],
+                    'country': twPlace['country'],
+                    'bounding_box': twPlace['bounding_box']
+                }
+        except KeyError:
+            place = {}
+    return place
+
 def Tweet(tw, config):
     """Create Tweet object
     """
@@ -94,7 +117,9 @@ def Tweet(tw, config):
     t.user_id_str = tw["user_id_str"]
     t.username = tw["user_data"]['screen_name']
     t.name = tw["user_data"]['name']
-    t.place = tw['geo'] if 'geo' in tw and tw['geo'] else ""
+    t.place = _get_place(tw['place'])
+    # t.place = tw['geo'] if 'geo' in tw and tw['geo'] else ""
+    # logme.error(f"====解析的时候位置========={str(t.place)}===========")
     t.timezone = strftime("%z", localtime())
     t.mentions = _get_mentions(tw)
     t.reply_to = _get_reply_to(tw)
