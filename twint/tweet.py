@@ -73,6 +73,7 @@ def getText(tw):
 
     return text
 def _get_place(twPlace):
+    logme.error(f"============={str(twPlace)}==========")
     try: #是否有 否{} 是解析
         if twPlace:
             # 解析
